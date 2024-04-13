@@ -1,31 +1,29 @@
-
 package main
 
 import (
-    "fmt"
-    "net/http"
-    "os"
-
-    "github.com/jinzhu/gorm"
-    _ "github.com/jinzhu/gorm/dialects/mysql"
+	"fmt"
+	"math"
 )
 
+// Vertexは2次元空間における点を表し、XとYの座標を持ちます。
+type Vertex struct {
+	X, Y float64
+}
+
+// Absは頂点の絶対値を計算して返します。
+// ピタゴラスの定理を用いて、原点(0,0)からの頂点までの距離を見つけます。
+// この関数はVertex vを入力として受け取り、距離をfloat64として返します。
+func Abs(v Vertex) float64 {
+	// math.Sqrtは平方根を計算します。
+	// v.X*v.X + v.Y*v.Y は頂点の座標の二乗の和を計算します。
+	return math.Sqrt(v.X*v.X + v.Y*v.Y)
+}
+
 func main() {
-    dbUser := os.Getenv("MYSQL_USER")
-    dbPass := os.Getenv("MYSQL_PASSWORD")
-    dbHost := os.Getenv("MYSQL_HOST")
-    dbName := os.Getenv("MYSQL_DB")
-    dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", dbUser, dbPass, dbHost, dbName)
+	// X=3、Y=4でVertexインスタンスを作成します。
+	v := Vertex{3, 4}
+	// 頂点の絶対値をコンソールに出力します。
+	// これは原点から点(3,4)までの距離を計算する方法を示しています。
+	fmt.Println(Abs(v))
 
-    db, err := gorm.Open("mysql", dsn)
-    if err != nil {
-        panic("データベースへの接続に失敗しました")
-    }
-    defer db.Close()
-
-    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        fmt.Fprintf(w, "Hello, Docker!")
-    })
-
-    http.ListenAndServe(":8080", nil)
 }
